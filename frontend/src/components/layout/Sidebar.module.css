@@ -27,16 +27,9 @@
 .logoIcon {
   width: 28px;
   height: 28px;
-  background: var(--accent);
   border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  object-fit: contain;
   flex-shrink: 0;
-  font-size: 14px;
-  font-weight: 700;
-  color: #fff;
-  font-family: var(--font-mono);
 }
 
 .logoText {
