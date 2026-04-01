@@ -245,7 +245,7 @@ cp .env.example .env
 
 | Variable | Default | Description |
 |---|---|---|
-| `DB_URL` | _(SQLite)_ | MySQL DSN, e.g. `mysql+aiomysql://root:pw@localhost:3306/mini_rag_chat` |
+| `DB_URL` | _(SQLite)_ | MySQL DSN, e.g. `mysql+aiomysql://root:pw@localhost:3306/rageve_chat` |
 | `CORS_ORIGINS` | `localhost:*` | Production frontend URL(s), comma-separated |
 | `TRUSTED_PROXY_COUNT` | `1` | Number of reverse proxies in front of the backend |
 | `API_KEY` | _(none)_ | Enables `X-API-Key` header authentication on all endpoints |
