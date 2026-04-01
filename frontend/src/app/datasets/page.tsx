@@ -11,12 +11,18 @@ import { Accordion, AccordionItem } from "@/components/ui/Accordion";
 import type { ProcessedFileResponse } from "@/lib/types";
 import styles from "./DatasetsPage.module.css";
 
+// ── Limits ───────────────────────────────────────────────────────────────────
+
+const MAX_FILE_BYTES   = 500 * 1024 * 1024;      // 500 MB per file
+const MAX_DATASET_BYTES = 100 * 1024 ** 3;        // 100 GB per dataset
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function fmtBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 ** 2) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
+  if (bytes < 1024 ** 3) return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
+  return `${(bytes / 1024 ** 3).toFixed(2)} GB`;
 }
 
 function scoreColor(score: number): string {
@@ -64,12 +70,35 @@ export default function DatasetsPage() {
   // ── File selection handlers ──────────────────────────────────────────────
 
   const handleFilesChosen = useCallback((files: File[]) => {
+    const oversized: string[] = [];
+    for (const f of files) {
+      if (f.size > MAX_FILE_BYTES) {
+        oversized.push(`${f.name} (${fmtBytes(f.size)} — max ${fmtBytes(MAX_FILE_BYTES)} per file)`);
+      }
+    }
+    if (oversized.length > 0) {
+      addToast(`File(s) too large:\n${oversized.join("\n")}`, "error");
+      return;
+    }
+
     setSelectedFiles((prev) => {
       const existing = new Set(prev.map((f) => f.name));
       const newFiles = files.filter((f) => !existing.has(f.name));
+
+      // Warn (but don't block) if the new total would exceed the dataset limit.
+      const existingTotal = prev.reduce((sum, f) => sum + f.size, 0);
+      const newTotal = newFiles.reduce((sum, f) => sum + f.size, 0);
+      if (existingTotal + newTotal > MAX_DATASET_BYTES) {
+        addToast(
+          `Total upload size (${fmtBytes(existingTotal + newTotal)}) exceeds the `
+            + `${fmtBytes(MAX_DATASET_BYTES)} dataset limit.`,
+          "warning"
+        );
+      }
+
       return [...prev, ...newFiles];
     });
-  }, []);
+  }, [addToast]);
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -299,6 +328,9 @@ export default function DatasetsPage() {
               </div>
               <div className={styles.dropzoneSub}>
                 PDF, DOCX, XLSX, PNG, JPG, TIFF
+              </div>
+              <div className={styles.dropzoneLimits}>
+                Max {fmtBytes(MAX_FILE_BYTES)} per file · {fmtBytes(MAX_DATASET_BYTES)} per dataset
               </div>
             </>
           ) : (
