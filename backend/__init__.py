@@ -1,1 +1,1 @@
-"""Mini RAG backend package."""
+"""RAGEve backend package."""

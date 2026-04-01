@@ -1,5 +1,5 @@
 """
-Central logging configuration for the Mini RAG Platform.
+Central logging configuration for RAGEve.
 
 Sets up RotatingFileHandler for each subsystem logger so that logs persist
 across server restarts and are separated by concern for easy grep/tail.

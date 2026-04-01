@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    app_name: str = "Mini RAG Platform"
+    app_name: str = "RAGEve"
     app_env: str = "dev"
 
     ollama_base_url: str = "http://localhost:11434"
