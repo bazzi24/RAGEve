@@ -5,8 +5,8 @@
   <rect x="0" y="0" width="4" height="120" rx="2" fill="#4f6ef7"/>
 
   <!-- ASCII-style RAG text -->
-  <text x="40" y="52" font-family="monospace" font-size="36" font-weight="bold" fill="#4f6ef7">RAGE</text>
-  <text x="145" y="52" font-family="monospace" font-size="36" font-weight="bold" fill="#e8eaf6">ve</text>
+  <text x="40" y="52" font-family="monospace" font-size="36" font-weight="bold" fill="#4f6ef7">RAGEve</text>
+  <text x="145" y="52" font-family="monospace" font-size="36" font-weight="bold" fill="#e8eaf6"></text>
 
   <!-- Tagline -->
   <text x="40" y="78" font-family="system-ui, sans-serif" font-size="13" fill="#6b7280">Local-first RAG platform · Ollama · Qdrant · FastAPI · Next.js</text>
