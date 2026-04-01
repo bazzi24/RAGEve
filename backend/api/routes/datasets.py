@@ -13,13 +13,18 @@ from typing import Any, AsyncIterator
 from fastapi import APIRouter, BackgroundTasks, File, HTTPException, Query, Request, UploadFile
 from fastapi.responses import StreamingResponse
 
+from backend.config import settings
 
-# 100 MB per request — enforced via Content-Length header before files are read.
-MAX_UPLOAD_BYTES = 100 * 1024 * 1024
+_log = logging.getLogger(__name__)
+
+# 500 MB per file / 100 GB per dataset — enforced via Content-Length header
+# before files are read.  The per-file and per-dataset limits are re-checked
+# in _check_file_size / _check_dataset_size (below) using actual byte counts.
+MAX_UPLOAD_BYTES = settings.max_upload_bytes
 
 
 def _check_content_length(request: Request) -> None:
-    """Raise 413 if the request's Content-Length exceeds MAX_UPLOAD_BYTES."""
+    """Raise 413 if the request's Content-Length header exceeds MAX_UPLOAD_BYTES."""
     content_length = request.headers.get("content-length")
     if content_length and int(content_length) > MAX_UPLOAD_BYTES:
         raise HTTPException(
@@ -28,9 +33,106 @@ def _check_content_length(request: Request) -> None:
         )
 
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Per-dataset byte tracking
+#
+# We track the total bytes stored on disk per dataset so that we can enforce
+# the 100 GB per-dataset cap before accepting a new upload.  The registry is
+# persisted to data/uploads/_dataset_registry.json so it survives server
+# restarts.
+#
+# Structure:
+#   { dataset_id: { "bytes": int, "updated_at": "ISO8601" } }
+# ──────────────────────────────────────────────────────────────────────────────
+
+_DATASET_REGISTRY_FILE = settings.upload_root / "_dataset_registry.json"
+_DATASET_REGISTRY_LOCK = asyncio.Lock()
+_dataset_bytes: dict[str, int] = {}   # in-memory copy
+
+
+def _load_dataset_registry() -> dict[str, int]:
+    """Load per-dataset byte totals from disk on startup."""
+    try:
+        if _DATASET_REGISTRY_FILE.exists():
+            with open(_DATASET_REGISTRY_FILE, "r", encoding="utf-8") as f:
+                raw: dict[str, dict[str, Any]] = json.load(f)
+            return {k: v.get("bytes", 0) for k, v in raw.items()}
+    except (json.JSONDecodeError, OSError) as exc:
+        _log.warning("Could not load dataset registry from %s: %s", _DATASET_REGISTRY_FILE, exc)
+    return {}
+
+
+def _persist_dataset_registry() -> None:
+    """Atomically write the dataset registry to disk."""
+    try:
+        _DATASET_REGISTRY_FILE.parent.mkdir(parents=True, exist_ok=True)
+        raw = {
+            k: {"bytes": v, "updated_at": datetime.now(timezone.utc).isoformat()}
+            for k, v in _dataset_bytes.items()
+        }
+        tmp = _DATASET_REGISTRY_FILE.with_suffix(".tmp")
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(raw, f)
+        tmp.replace(_DATASET_REGISTRY_FILE)
+    except Exception as exc:
+        _log.warning("Failed to persist dataset registry: %s", exc)
+
+
+# Rehydrate from disk on module load.
+_dataset_bytes = _load_dataset_registry()
+
+
+def _get_dataset_bytes(dataset_id: str) -> int:
+    """Return the total bytes stored on disk for a dataset (0 if not tracked)."""
+    return _dataset_bytes.get(dataset_id, 0)
+
+
+async def _add_dataset_bytes(dataset_id: str, file_bytes: int) -> None:
+    """Increment the on-disk byte total for a dataset and persist."""
+    async with _DATASET_REGISTRY_LOCK:
+        _dataset_bytes[dataset_id] = _dataset_bytes.get(dataset_id, 0) + file_bytes
+        _persist_dataset_registry()
+
+
+def _check_file_size(upload: UploadFile, file_bytes: int) -> None:
+    """
+    Raise 413 if an individual file exceeds MAX_UPLOAD_BYTES (500 MB).
+
+    Called *after* the bytes have been read (file_bytes == len(await upload.read())).
+    We re-check here rather than trusting Content-Length because the browser
+    may not send it correctly for multipart/form-data.
+    """
+    if file_bytes > settings.max_upload_bytes:
+        raise HTTPException(
+            status_code=413,
+            detail=(
+                f"File '{upload.filename}' is {file_bytes / 1024 / 1024:.1f} MB, "
+                f"which exceeds the {settings.max_upload_bytes // 1024 // 1024} MB per-file limit."
+            ),
+        )
+
+
+def _check_dataset_size(dataset_id: str, incoming_bytes: int) -> None:
+    """
+    Raise 413 if adding incoming_bytes to the existing dataset would exceed
+    MAX_DATASET_BYTES (100 GB).
+    """
+    current = _get_dataset_bytes(dataset_id)
+    max_bytes = settings.max_dataset_bytes
+    if current + incoming_bytes > max_bytes:
+        raise HTTPException(
+            status_code=413,
+            detail=(
+                f"Dataset '{dataset_id}' already contains {current / 1024**3:.2f} GB. "
+                f"Adding {incoming_bytes / 1024**3:.2f} GB would exceed the "
+                f"{max_bytes / 1024**3:.0f} GB per-dataset limit. "
+                f"Upload a smaller file or use a different dataset ID."
+            ),
+        )
+
+
 from backend.api.routes._limiter import limiter
 
-from backend.config import settings
 from backend.schemas.datasets import (
     CollectionDeleteResponse,
     DatasetInfo,
@@ -42,8 +144,6 @@ from backend.schemas.datasets import (
 )
 from backend.services.file_processor import FileProcessorService, SUPPORTED_EXTENSIONS
 from rag.deepdoc.quality_scorer import ChunkProfile
-
-_log = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 processor = FileProcessorService()
@@ -300,9 +400,22 @@ async def submit_background_ingest(
     ingest_id = str(uuid.uuid4())
     file_paths: list[tuple[str, Path]] = []
 
+    # Read bytes first so we can validate per-file size before saving.
+    # SpooledTemporaryFile can only be read once — store the full bytes.
+    file_bytes_list: list[bytes] = []
     for upload in files:
+        file_bytes = await upload.read()
+        _check_file_size(upload, len(file_bytes))
+        file_bytes_list.append(file_bytes)
+
+    _check_dataset_size(dataset_id, sum(file_bytes_list))
+
+    for upload, file_bytes in zip(files, file_bytes_list):
         try:
-            saved = await processor.save_upload(dataset_id=dataset_id, upload=upload)
+            saved = await processor.save_upload(
+                dataset_id=dataset_id, upload=upload, file_bytes=file_bytes
+            )
+            await _add_dataset_bytes(dataset_id, len(file_bytes))
             file_paths.append((upload.filename, saved))
         except Exception as exc:
             # Rollback already-saved files.
@@ -544,6 +657,11 @@ async def upload_and_ingest(
     ingestion = get_ingestion_service()
 
     results: list[dict] = []
+
+    # ── Phase 1: validate all files before touching disk ─────────────────────
+    # SpooledTemporaryFile can only be read once, so store the bytes.
+    total_incoming = 0
+    file_bytes_list: list[bytes] = []
     for upload in files:
         ext = Path(upload.filename).suffix.lower()
         if ext not in SUPPORTED_EXTENSIONS:
@@ -552,7 +670,17 @@ async def upload_and_ingest(
                 detail=f"Unsupported extension '{ext}'. Supported: {sorted(SUPPORTED_EXTENSIONS)}",
             )
 
-        saved_file = await processor.save_upload(dataset_id=dataset_id, upload=upload)
+        file_bytes = await upload.read()
+        _check_file_size(upload, len(file_bytes))
+        total_incoming += len(file_bytes)
+        file_bytes_list.append(file_bytes)
+
+    _check_dataset_size(dataset_id, total_incoming)
+
+    # ── Phase 2: save + ingest each file (reusing bytes from Phase 1) ──────
+    for upload, file_bytes in zip(files, file_bytes_list):
+        saved_file = await processor.save_upload(dataset_id=dataset_id, upload=upload, file_bytes=file_bytes)
+        await _add_dataset_bytes(dataset_id, len(file_bytes))
 
         result = await ingestion.ingest_file(
             file_path=saved_file,
@@ -594,7 +722,11 @@ async def _stream_upload_and_ingest(
 
     results: list[dict] = []
 
-    for idx, upload in enumerate(files, start=1):
+    # ── Phase 1: validate all files before touching disk ─────────────────────
+    # SpooledTemporaryFile can only be read once — store the full bytes.
+    total_incoming = 0
+    file_bytes_list: list[bytes] = []
+    for upload in files:
         ext = Path(upload.filename).suffix.lower()
         if ext not in SUPPORTED_EXTENSIONS:
             yield json.dumps(
@@ -602,14 +734,24 @@ async def _stream_upload_and_ingest(
                     "event": "error",
                     "stage": "failed",
                     "message": f"Unsupported extension '{ext}'. Supported: {sorted(SUPPORTED_EXTENSIONS)}",
-                    "progress": int(((idx - 1) / max(total_files, 1)) * 100),
+                    "progress": 0,
                     "dataset_id": dataset_id,
                     "file": upload.filename,
-                    "file_index": idx,
-                    "file_total": total_files,
+                    "file_index": 0,
+                    "file_total": len(files),
                 }
             ) + "\n"
             return
+
+        file_bytes = await upload.read()
+        total_incoming += len(file_bytes)
+        file_bytes_list.append(file_bytes)
+
+    _check_dataset_size(dataset_id, total_incoming)
+
+    # ── Phase 2: save + ingest each file (reusing bytes from Phase 1) ──────
+    for idx, (upload, file_bytes) in enumerate(zip(files, file_bytes_list), start=1):
+        _check_file_size(upload, len(file_bytes))
 
         yield json.dumps(
             {
@@ -624,7 +766,8 @@ async def _stream_upload_and_ingest(
             }
         ) + "\n"
 
-        saved_file = await processor.save_upload(dataset_id=dataset_id, upload=upload)
+        saved_file = await processor.save_upload(dataset_id=dataset_id, upload=upload, file_bytes=file_bytes)
+        await _add_dataset_bytes(dataset_id, len(file_bytes))
 
         progress_queue: asyncio.Queue[str | None] = asyncio.Queue()
 

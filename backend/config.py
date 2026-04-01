@@ -49,6 +49,10 @@ class Settings(BaseSettings):
     default_chunk_overlap: int = 180
     default_max_tokens_per_chunk: int = 500
 
+    # Upload limits
+    max_upload_bytes: int = 500 * 1024 * 1024      # 500 MB per file
+    max_dataset_bytes: int = 100 * 1024 ** 3      # 100 GB per dataset
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

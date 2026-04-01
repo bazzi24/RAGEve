@@ -17,15 +17,31 @@ class FileProcessorService:
         self.chunk_overlap = settings.default_chunk_overlap
         self.max_tokens_per_chunk = settings.default_max_tokens_per_chunk
 
-    async def save_upload(self, dataset_id: str, upload: UploadFile) -> Path:
+    async def save_upload(
+        self,
+        dataset_id: str,
+        upload: UploadFile,
+        file_bytes: bytes | None = None,
+    ) -> Path:
+        """
+        Write an uploaded file to ``data/uploads/{dataset_id}/``.
+
+        Pass ``file_bytes`` when the caller has already called ``await upload.read()``
+        to avoid a second read.  When omitted the method reads the bytes itself.
+        """
         dataset_dir = settings.upload_root / dataset_id
         dataset_dir.mkdir(parents=True, exist_ok=True)
 
         target = dataset_dir / upload.filename
-        content = await upload.read()
+        content = file_bytes if file_bytes is not None else await upload.read()
         target.write_bytes(content)
 
-        _log.debug("[%s] File saved: %s (%.1f KB)", dataset_id, upload.filename, len(content) / 1024)
+        _log.debug(
+            "[%s] File saved: %s (%.1f MB)",
+            dataset_id,
+            upload.filename,
+            len(content) / 1024 / 1024,
+        )
         return target
 
     def process_file(self, dataset_id: str, file_path: Path) -> dict:
