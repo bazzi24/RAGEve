@@ -84,7 +84,6 @@ cd RAGEve
 - **2026-03-26** Phase 7 — Cross-encoder reranking (sentence-transformers)
 - **2026-03-25** Phase 3 — E2E test suite, conversation persistence
 
-> See [CLAUDE.md](CLAUDE.md) for the full changelog.
 
 ---
 
@@ -325,7 +324,6 @@ uv run python test/_test_stress.py --test all --stream --keep-files
 
 ## 📜 Roadmap
 
-See [CLAUDE.md](CLAUDE.md) for the full changelog and planned features.
 
 Upcoming:
 - [ ] RAGFlow-style deep document parsing (layout awareness, table extraction)
@@ -340,7 +338,6 @@ Upcoming:
 
 - 🐛 [Bug Reports](https://github.com/bazzi24/RAGEve/issues) — report issues with clear reproduction steps
 - 💡 [Feature Requests](https://github.com/bazzi24/RAGEve/issues) — open a discussion or issue
-- 📖 [Documentation](CLAUDE.md) — this project's full technical reference
 - 🤝 [Contributing](#-contributing) — see below
 
 ---
@@ -366,7 +363,6 @@ cp .env.example .env    # optional: fill in HF_TOKEN, API_KEY, etc.
 ./scripts/backend.sh  # backend only for iterative development
 ```
 
-> See [CLAUDE.md](CLAUDE.md) for the full project architecture, key files, and development conventions.
 
 ---
 
