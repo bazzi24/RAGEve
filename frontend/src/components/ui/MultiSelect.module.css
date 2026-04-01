@@ -1,0 +1,242 @@
+/* MultiSelect.module.css */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  position: relative;
+}
+
+/* ── Label ── */
+
+.label {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── Trigger button ── */
+
+.trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 8px var(--space-3);
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+  text-align: left;
+  min-height: 38px;
+}
+
+.trigger:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  background-color: var(--bg-secondary);
+}
+
+.trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.triggerText {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.selectedCount {
+  color: var(--text-primary);
+}
+
+.chevron {
+  font-size: 10px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ── Chip list ── */
+
+.chipList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px 0;
+  max-height: 96px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px 2px 8px;
+  background-color: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  color: var(--text-primary);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.chipType {
+  font-size: 9px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-weight: 400;
+}
+
+.chipRemove {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  transition: color var(--transition-fast);
+}
+
+.chipRemove:hover {
+  color: var(--error);
+}
+
+/* ── Hint ── */
+
+.hint {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Dropdown ── */
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-focus, #3b82f6);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
+  max-height: 320px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  animation: dropdownIn 0.12s ease;
+}
+
+@keyframes dropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Dropdown actions (select all / clear) ── */
+
+.dropdownActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg-secondary);
+}
+
+.dropdownAction {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: var(--text-xs);
+  color: var(--accent);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.dropdownAction:hover {
+  text-decoration: underline;
+}
+
+.dropdownSep {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* ── Dropdown items ── */
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  user-select: none;
+}
+
+.dropdownItem:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.itemCheckbox {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+.itemLabel {
+  flex: 1;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemType {
+  font-size: 9px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.dropdownEmpty {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-align: center;
+  font-style: italic;
+}

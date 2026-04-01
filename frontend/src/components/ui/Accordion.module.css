@@ -1,0 +1,71 @@
+/* Accordion.module.css */
+
+.root {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.item {
+  border-bottom: 1px solid var(--border);
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  gap: var(--space-3);
+  transition: background-color var(--transition-fast);
+}
+
+.trigger:hover {
+  background-color: var(--bg-hover);
+}
+
+.triggerOpen {
+  background-color: var(--bg-tertiary);
+}
+
+.chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform var(--transition-base);
+}
+
+.chevron.open {
+  transform: rotate(180deg);
+}
+
+.content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--transition-base);
+}
+
+.content.open {
+  grid-template-rows: 1fr;
+}
+
+.inner {
+  overflow: hidden;
+}
+
+.panel {
+  padding: 0 var(--space-5) var(--space-4);
+}

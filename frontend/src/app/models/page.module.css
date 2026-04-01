@@ -1,0 +1,326 @@
+/* /models/page.module.css */
+
+.page {
+  max-width: 900px;
+  padding: var(--space-8) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.headerActions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+/* ── Status bar ─────────────────────────────────────────────────────────── */
+
+.statusBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.statusOk {
+  background-color: var(--success);
+}
+
+.statusError {
+  background-color: var(--error);
+}
+
+.statusText {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+/* ── Error banner ─────────────────────────────────────────────────────── */
+
+.errorBanner {
+  padding: var(--space-3) var(--space-4);
+  background-color: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--error);
+}
+
+/* ── Sections ─────────────────────────────────────────────────────────── */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.sectionTitle {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.sectionDesc {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin-top: calc(var(--space-2) * -1);
+}
+
+/* ── Defaults section ─────────────────────────────────────────────────── */
+
+.defaultsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.defaultCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.defaultLabel {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.defaultHint {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: calc(var(--space-1) * -1);
+}
+
+.defaultsActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.savedLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--success);
+}
+
+/* ── Model count badge ─────────────────────────────────────────────────── */
+
+.modelCount {
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  font-weight: 400;
+  color: var(--text-muted);
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 1px 8px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ── Models grid ──────────────────────────────────────────────────────── */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+/* ── Model card ──────────────────────────────────────────────────────── */
+
+.card {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  transition: border-color var(--transition-fast);
+}
+
+.card:hover {
+  border-color: var(--border-focus);
+}
+
+.cardHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  background-color: var(--bg-tertiary);
+}
+
+.cardName {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+.cardBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border: 1px solid transparent;
+}
+
+.badgeEmbed {
+  background-color: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+}
+
+.badgeChat {
+  background-color: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #10b981;
+}
+
+.badgePossible {
+  background-color: var(--bg-secondary);
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+
+/* ── Card metadata ──────────────────────────────────────────────────── */
+
+.cardMeta {
+  padding: 0 var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metaRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.metaKey {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.metaVal {
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+/* ── Card actions ────────────────────────────────────────────────────── */
+
+.cardActions {
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  margin-top: auto;
+}
+
+.inUseLabel {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ── Empty state ────────────────────────────────────────────────────── */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
+}
+
+.emptyIcon {
+  color: var(--text-muted);
+  opacity: 0.4;
+}
+
+.emptyTitle {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.emptyDesc {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  max-width: 400px;
+}
+
+.emptyCode {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  text-align: left;
+  white-space: pre;
+  line-height: 1.6;
+}
+
+/* ── Spinner animation ─────────────────────────────────────────────── */
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

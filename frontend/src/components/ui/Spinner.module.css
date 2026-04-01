@@ -1,0 +1,16 @@
+/* Spinner.module.css */
+
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circle {
+  animation: spin 0.75s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

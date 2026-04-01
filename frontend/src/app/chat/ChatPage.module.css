@@ -1,0 +1,91 @@
+/* chat/page.module.css */
+
+.page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-5);
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.layout {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-secondary);
+}
+
+.chatArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.emptyState {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  color: var(--text-muted);
+}
+
+.emptyIcon {
+  width: 48px;
+  height: 48px;
+  opacity: 0.4;
+}
+
+.emptyTitle {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.emptyDesc {
+  font-size: var(--text-sm);
+  text-align: center;
+  max-width: 300px;
+}
+
+.promptHint {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-align: center;
+  padding: var(--space-3);
+}

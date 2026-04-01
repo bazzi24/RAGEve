@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 120" fill="none">
+  <rect width="800" height="120" rx="12" fill="#0a0e1a"/>
+
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="4" height="120" rx="2" fill="#4f6ef7"/>
+
+  <!-- ASCII-style RAG text -->
+  <text x="40" y="52" font-family="monospace" font-size="36" font-weight="bold" fill="#4f6ef7">RAG</text>
+  <text x="145" y="52" font-family="monospace" font-size="36" font-weight="bold" fill="#e8eaf6">ve</text>
+
+  <!-- Tagline -->
+  <text x="40" y="78" font-family="system-ui, sans-serif" font-size="13" fill="#6b7280">Local-first RAG platform · Ollama · Qdrant · FastAPI · Next.js</text>
+
+  <!-- Separator line -->
+  <line x1="40" y1="90" x2="760" y2="90" stroke="#1e2535" stroke-width="1"/>
+
+  <!-- Feature pills -->
+  <rect x="40" y="100" width="90" height="20" rx="4" fill="#1a2240"/>
+  <text x="85" y="114" font-family="system-ui, sans-serif" font-size="10" fill="#4f6ef7" text-anchor="middle">🔍 DeepDoc</text>
+
+  <rect x="140" y="100" width="80" height="20" rx="4" fill="#1a2240"/>
+  <text x="180" y="114" font-family="system-ui, sans-serif" font-size="10" fill="#4f6ef7" text-anchor="middle">🧠 Rerank</text>
+
+  <rect x="230" y="100" width="90" height="20" rx="4" fill="#1a2240"/>
+  <text x="275" y="114" font-family="system-ui, sans-serif" font-size="10" fill="#4f6ef7" text-anchor="middle">⚡ Streaming</text>
+
+  <rect x="330" y="100" width="100" height="20" rx="4" fill="#1a2240"/>
+  <text x="380" y="114" font-family="system-ui, sans-serif" font-size="10" fill="#4f6ef7" text-anchor="middle">🤖 Ollama Local</text>
+
+  <rect x="440" y="100" width="90" height="20" rx="4" fill="#1a2240"/>
+  <text x="485" y="114" font-family="system-ui, sans-serif" font-size="10" fill="#4f6ef7" text-anchor="middle">🗄️ Qdrant</text>
+
+  <rect x="540" y="100" width="110" height="20" rx="4" fill="#1a2240"/>
+  <text x="595" y="114" font-family="system-ui, sans-serif" font-size="10" fill="#4f6ef7" text-anchor="middle">📦 HuggingFace</text>
+
+  <!-- Right side: architecture diagram -->
+  <rect x="680" y="30" width="80" height="50" rx="4" fill="#1a2240" stroke="#4f6ef7" stroke-width="1"/>
+  <text x="720" y="48" font-family="system-ui, sans-serif" font-size="9" fill="#6b7280" text-anchor="middle">Qdrant</text>
+  <text x="720" y="68" font-family="system-ui, sans-serif" font-size="9" fill="#4f6ef7" text-anchor="middle">Ollama</text>
+
+  <!-- Arrow -->
+  <path d="M 660 55 L 675 55" stroke="#4f6ef7" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <defs>
+    <marker id="arrow" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 z" fill="#4f6ef7"/>
+    </marker>
+  </defs>
+</svg>

@@ -1,0 +1,32 @@
+[project]
+name = "rageve"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.116.0",
+    "uvicorn>=0.35.0",
+    "httpx>=0.28.1",
+    "pydantic-settings>=2.10.1",
+    "langchain-text-splitters>=0.3.11",
+    "qdrant-client>=1.15.1",
+    "pandas>=2.3.2",
+    "pymupdf>=1.26.4",
+    "python-docx>=1.2.0",
+    "openpyxl>=3.1.5",
+    "pillow>=11.3.0",
+    "pytesseract>=0.3.13",
+    "python-multipart>=0.0.20",
+    "regex>=2025.9.18",
+    "huggingface-hub[cli]>=1.7.2",
+    "pyarrow>=23.0.1",
+    "sentence-transformers>=3.3.0",
+    "datasets>=3.1.0",
+    "fastembed>=0.8.0,<1.0.0",
+    "slowapi>=0.1.9",
+    "sqlalchemy[asyncio]>=2.0",
+    "aiomysql>=0.2.0",
+    "pymysql>=1.1.0",
+    "aiosqlite>=0.21.0",
+]

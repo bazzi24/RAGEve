@@ -1,0 +1,56 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./data/qdrant:/qdrant/storage
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.4
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: mini_rag_password
+      MYSQL_DATABASE: mini_rag_chat
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-mini_rag_password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  backend:
+    image: ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+    container_name: backend
+    working_dir: /app
+    command: ["sh", "-c", "uv sync && uv run uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+      - ./data:/app/data
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      VECTOR_DB_PROVIDER: qdrant
+      QDRANT_URL: http://qdrant:6333
+      DATA_ROOT: /app/data
+      DB_URL: mysql+aiomysql://root:${MYSQL_ROOT_PASSWORD:-mini_rag_password}@mysql:3306/mini_rag_chat?charset=utf8mb4
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    restart: unless-stopped

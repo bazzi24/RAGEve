@@ -1,0 +1,180 @@
+/* ============================================================
+   Design Tokens — CSS Custom Properties
+   Theme: dark (default), light (via [data-theme="light"])
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+/* ── Spacing ─────────────────────────────────────────────── */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* ── Typography ─────────────────────────────────────────── */
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-lg: 17px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+
+  /* ── Radii ─────────────────────────────────────────────── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ── Transitions ────────────────────────────────────────── */
+  --transition-fast: 120ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 350ms ease;
+
+  /* ── Shadows ────────────────────────────────────────────── */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* ── Dark theme (default) ─────────────────────────────────── */
+[data-theme="dark"] {
+  --bg-primary: #0c0e14;
+  --bg-secondary: #12151e;
+  --bg-tertiary: #1a1e2e;
+  --bg-elevated: #1f2438;
+  --bg-hover: #252a40;
+  --bg-active: #2c3250;
+
+  --border: #2a2f47;
+  --border-subtle: #1f2438;
+  --border-focus: #4f6ef7;
+
+  --text-primary: #e8ecf5;
+  --text-secondary: #8a94ad;
+  --text-muted: #555f7a;
+  --text-inverse: #0c0e14;
+
+  --accent: #4f6ef7;
+  --accent-hover: #6b85ff;
+  --accent-muted: rgba(79, 110, 247, 0.15);
+  --accent-text: #ffffff;
+
+  --success: #3dd68c;
+  --success-muted: rgba(61, 214, 140, 0.12);
+  --warning: #f5a623;
+  --warning-muted: rgba(245, 166, 35, 0.12);
+  --error: #f25f5c;
+  --error-muted: rgba(242, 95, 92, 0.12);
+  --info: #4f6ef7;
+  --info-muted: rgba(79, 110, 247, 0.12);
+}
+
+/* ── Light theme ───────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg-primary: #f5f6fa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #eef0f6;
+  --bg-elevated: #ffffff;
+  --bg-hover: #eceef5;
+  --bg-active: #e2e5f0;
+
+  --border: #d8dce8;
+  --border-subtle: #eef0f6;
+  --border-focus: #4f6ef7;
+
+  --text-primary: #1a1e2e;
+  --text-secondary: #555f7a;
+  --text-muted: #8a94ad;
+  --text-inverse: #ffffff;
+
+  --accent: #4f6ef7;
+  --accent-hover: #3a57e5;
+  --accent-muted: rgba(79, 110, 247, 0.1);
+  --accent-text: #ffffff;
+
+  --success: #22a06b;
+  --success-muted: rgba(34, 160, 107, 0.1);
+  --warning: #c47d00;
+  --warning-muted: rgba(196, 125, 0, 0.1);
+  --error: #d93025;
+  --error-muted: rgba(217, 48, 37, 0.1);
+  --info: #4f6ef7;
+  --info-muted: rgba(79, 110, 247, 0.1);
+}
+
+/* ── Global resets ─────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 15px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+code,
+pre {
+  font-family: var(--font-mono);
+}
+
+/* ── Scrollbar styling ─────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ── Selection ──────────────────────────────────────────────── */
+::selection {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+/* ── Focus ring ────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}

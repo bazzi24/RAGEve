@@ -1,0 +1,80 @@
+/* ChatMessage.module.css */
+
+.message {
+  display: flex;
+  gap: var(--space-3);
+  max-width: 100%;
+}
+
+.user {
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.userAvatar {
+  background-color: var(--accent);
+  color: #fff;
+}
+
+.assistantAvatar {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.bubble {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  max-width: 72ch;
+}
+
+.user .bubble {
+  background-color: var(--accent);
+  color: #fff;
+  border-bottom-right-radius: var(--radius-sm);
+}
+
+.assistant .bubble {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-bottom-left-radius: var(--radius-sm);
+}
+
+.content {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.content code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background-color: rgba(0, 0, 0, 0.15);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.user .content code {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.timestamp {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: var(--space-1);
+}
