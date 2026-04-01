@@ -15,12 +15,12 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: mini_rag_password
-      MYSQL_DATABASE: mini_rag_chat
+      MYSQL_ROOT_PASSWORD: rageve_password
+      MYSQL_DATABASE: rageve_chat
     volumes:
       - ./data/mysql:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-mini_rag_password}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rageve_password}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -45,7 +45,7 @@ services:
       VECTOR_DB_PROVIDER: qdrant
       QDRANT_URL: http://qdrant:6333
       DATA_ROOT: /app/data
-      DB_URL: mysql+aiomysql://root:${MYSQL_ROOT_PASSWORD:-mini_rag_password}@mysql:3306/mini_rag_chat?charset=utf8mb4
+      DB_URL: mysql+aiomysql://root:${MYSQL_ROOT_PASSWORD:-rageve_password}@mysql:3306/rageve_chat?charset=utf8mb4
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
