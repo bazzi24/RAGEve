@@ -58,9 +58,8 @@ RAGEve is designed for two audiences:
 
 ---
 
-## 🎮 Demo
-<div align="center"> 
-![RAGEve](docs/assets/demo.gif)
+<div align="center">
+  <img src="docs/assets/demo.gif" alt="RAGEve" />
 </div>
 
 Start RAGEve locally and open [http://localhost:3000](http://localhost:3000):
