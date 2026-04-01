@@ -1,0 +1,56 @@
+# Environment / secrets — never commit these
+.env
+.env.local
+.env.*.local
+
+# Environment variable documentation — commit this
+.env.example
+
+# Python
+__pycache__/
+*.py[oc]
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+wheels/
+.venv/
+venv/
+.venv
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Node.js
+node_modules/
+.npm
+.yarn/
+.pnp/
+.pnp.js
+
+# Next.js
+.next/
+out/
+.turbo/
+
+# Logs
+*.log
+data/logs/
+
+# Local data (uploads, chat DB, HF cache, etc.)
+data/
+# Exception: keep README under data/ if it exists
+data/README.md
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# uv lock file (commit uv.lock, not the other ones)
+uv.lock
