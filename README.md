@@ -1,7 +1,7 @@
 <!-- PROJECT BADGES -->
 <div align="center">
 
-![RAGEve](docs/assets/banner.svg)
+![RAGEve](docs/assets/banner.png)
 
 **Local-first RAG platform — Fast, private, no cloud required.**
 
