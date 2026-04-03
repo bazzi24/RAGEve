@@ -36,6 +36,7 @@
 - 🔨 [Launch Service from Source for Development](#-launch-service-from-source-for-development)
   - [Backend only (technical users)](#-backend-only)
 - 📜 [Roadmap](#-roadmap)
+- 📊 [Benchmark](#-benchmark)
 - 🏄 [Community](#-community)
 - 🙌 [Contributing](#-contributing)
 
@@ -77,8 +78,9 @@ cd RAGEve
 
 ## 🔥 Latest Updates
 
+- **2026-04-03** Phase 24 — Evaluation matrix (16-cell benchmark) + Qdrant hybrid search fix
+- **2026-04-01** Phase 23 — 9 production fixes: structured 500 handler, health checks, rate limiter proxy safety, request timeouts, streaming 404 fix, file upload limits, paginated datasets API
 - **2026-04-01** Phase 22 — Chat history with MySQL/SQLite, session panel, per-agent conversations
-- **2026-03-30** Phase 21 — HF route split, rich context metadata, system audit fixes
 - **2026-03-28** Phase 16 — Background HF dataset ingest with live progress tracking
 - **2026-03-26** Phase 6c — Real-time streaming upload with per-batch progress stages
 - **2026-03-26** Phase 7 — Cross-encoder reranking (sentence-transformers)
@@ -319,6 +321,61 @@ uv run python test/_test_e2e.py
 # Stress tests
 uv run python test/_test_stress.py --test all --stream --keep-files
 ```
+
+---
+
+## 📊 Benchmark
+
+RAGEve's retrieval pipeline is benchmarked on **100 SQuAD questions** across every combination of embedding model, LLM, and search strategy. All metrics are computed automatically by an LLM-as-judge — no manual scoring.
+
+### Methodology
+
+| Dimension | Options |
+|---|---|
+| **Embedding models** | nomic-embed-text (768d), qwen3-embedding (4096d) |
+| **LLM** | llama3.2, SmolLM2-1.7B |
+| **Search strategies** | Dense · Hybrid · Hybrid+Rerank · Dense+Rerank |
+| **Dataset** | SQuAD v1.1 (100 questions) |
+| **Retrieval top-k** | 5 |
+
+**Metrics:** NDCG@K, MRR, Recall@K (retrieval) · Faithfulness, Answer Relevance (LLM-as-judge)
+
+### Results — nomic-embed-text + llama3.2
+
+| Mode | NDCG@K | MRR | Recall@K | Answer Relevance |
+|---|---:|---:|---:|---:|
+| **Dense** | 0.30 | 0.30 | 0.30 | **0.54** |
+| **Hybrid** | 0.23 | 0.23 | 0.30 | 0.36 |
+| **Hybrid+Rerank** | 0.24 | 0.25 | 0.30 | 0.29 |
+| **Dense+Rerank** | **0.40** | **0.40** | **0.40** | 0.35 |
+
+### Key Findings
+
+- **Dense+Rerank** achieves the best retrieval quality overall — **NDCG@K 0.40**, a 33% improvement over plain Dense
+- **Dense** (no reranking) delivers the highest Answer Relevance score (**0.54**) — fewer, more focused chunks help the LLM answer more precisely
+- **Hybrid search** boosts Recall (0.30) but adds noise from keyword matching, slightly lowering answer quality
+- **Cross-encoder reranking** consistently improves retrieval rank ordering; the NDCG/MRR gain over Dense is significant
+
+### Performance Breakdown
+
+<div align="center">
+  <img src="docs/assets/benchmark_chart.png" alt="RAGEve Benchmark Results" width="860" />
+</div>
+
+### Run Your Own Benchmark
+
+```bash
+# Full 16-cell matrix, 100 SQuAD questions
+uv run python test/benchmark/evaluation/matrix.py --samples 100
+
+# Quick smoke test — 100 samples, one model/mode
+uv run python test/benchmark/evaluation/matrix.py --samples 100 --embed nomic --llm llama3.2
+
+# Filter to specific search modes
+uv run python test/benchmark/evaluation/matrix.py --samples 100 --mode rerank hybrid
+```
+
+Results are saved to `data/benchmarks/matrix-<timestamp>.json` with full per-sample answers and judge scores.
 
 ---
 
