@@ -326,7 +326,7 @@ uv run python test/_test_stress.py --test all --stream --keep-files
 
 ## 📊 Benchmark
 
-RAGEve's retrieval pipeline is benchmarked on **100 SQuAD questions** across every combination of embedding model, LLM, and search strategy. All metrics are computed automatically by an LLM-as-judge — no manual scoring.
+RAGEve's retrieval pipeline is benchmarked on **100 SQuAD questions** across every combination of embedding model, LLM, and search strategy. All metrics are computed automatically by an LLM-as-judge — no manual scoring. I run local with NVIDIA 1650, if you use stronger GPU, i think benchmark will better. If you clone this project and run with stronger GPU, give me feedback.
 
 ### Methodology
 
@@ -340,7 +340,7 @@ RAGEve's retrieval pipeline is benchmarked on **100 SQuAD questions** across eve
 
 **Metrics:** NDCG@K, MRR, Recall@K (retrieval) · Faithfulness, Answer Relevance (LLM-as-judge)
 
-### Results — nomic-embed-text + llama3.2
+### Results — nomic-embed-text (768d) + llama3.2
 
 | Mode | NDCG@K | MRR | Recall@K | Answer Relevance |
 |---|---:|---:|---:|---:|
@@ -349,17 +349,28 @@ RAGEve's retrieval pipeline is benchmarked on **100 SQuAD questions** across eve
 | **Hybrid+Rerank** | 0.24 | 0.25 | 0.30 | 0.29 |
 | **Dense+Rerank** | **0.40** | **0.40** | **0.40** | 0.35 |
 
+### Results — qwen3-embedding (4096d) + llama3.2
+
+| Mode | NDCG@K | MRR | Recall@K | Answer Relevance |
+|---|---:|---:|---:|---:|
+| **Dense** | **0.50** | **0.50** | **0.50** | 0.44 |
+| **Hybrid** | 0.30 | 0.37 | **0.50** | **0.70** |
+| **Hybrid+Rerank** | 0.41 | 0.50 | **0.50** | 0.53 |
+| **Dense+Rerank** | **0.50** | **0.50** | **0.50** | 0.64 |
+
+> Higher is better for all metrics. Bold = best in column.
+
 ### Key Findings
 
-- **Dense+Rerank** achieves the best retrieval quality overall — **NDCG@K 0.40**, a 33% improvement over plain Dense
-- **Dense** (no reranking) delivers the highest Answer Relevance score (**0.54**) — fewer, more focused chunks help the LLM answer more precisely
-- **Hybrid search** boosts Recall (0.30) but adds noise from keyword matching, slightly lowering answer quality
-- **Cross-encoder reranking** consistently improves retrieval rank ordering; the NDCG/MRR gain over Dense is significant
+- **qwen3-embedding (4096d) dramatically outperforms nomic-embed-text (768d)** — Dense retrieval alone gives qwen3 a **0.50 NDCG** vs nomic's 0.30, a **67% relative improvement**
+- **Dense+Rerank** is the safest strategy — best retrieval quality on both models with consistent Answer Relevance
+- **Hybrid search shines on qwen3** — Answer Relevance jumps to **0.70** (vs 0.44 Dense), because keyword matching supplements semantic search for factoid questions
+- **Cross-encoder reranking** lifts NDCG/MRR on both models — the reranker refines ranking beyond raw similarity scores
 
 ### Performance Breakdown
 
 <div align="center">
-  <img src="docs/assets/benchmark_chart.png" alt="RAGEve Benchmark Results" width="860" />
+  <img src="docs/assets/benchmark_chart.png" alt="RAGEve Benchmark Results — nomic vs qwen3 on SQuAD v1.1" width="860" />
 </div>
 
 ### Run Your Own Benchmark
@@ -368,8 +379,11 @@ RAGEve's retrieval pipeline is benchmarked on **100 SQuAD questions** across eve
 # Full 16-cell matrix, 100 SQuAD questions
 uv run python test/benchmark/evaluation/matrix.py --samples 100
 
-# Quick smoke test — 100 samples, one model/mode
-uv run python test/benchmark/evaluation/matrix.py --samples 100 --embed nomic --llm llama3.2
+# One embed model, all modes
+uv run python test/benchmark/evaluation/matrix.py --samples 100 --embed qwen3 --llm llama3.2
+
+# Quick smoke test
+uv run python test/benchmark/evaluation/matrix.py --samples 10 --embed nomic --llm llama3.2
 
 # Filter to specific search modes
 uv run python test/benchmark/evaluation/matrix.py --samples 100 --mode rerank hybrid
