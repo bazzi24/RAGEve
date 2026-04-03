@@ -1,118 +1,86 @@
-"""Generate benchmark comparison chart for README using user-provided results."""
+"""Generate benchmark comparison chart — nomic vs qwen3, 4 metrics."""
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.ticker
 import numpy as np
 
-# User-provided data — 100 SQuAD questions, top-5 retrieval, nomic-embed-text + llama3.2
-modes      = ['Dense', 'Hybrid', 'Hybrid+Rerank', 'Dense+Rerank']
-ndcg       = [0.30,  0.23,    0.24,            0.40]
-mrr        = [0.30,  0.23,    0.25,            0.40]
-recall     = [0.30,  0.30,    0.30,            0.40]
-ans_rel    = [0.54,  0.36,    0.29,            0.35]
+# Exact numbers from benchmark runs
+MODES = ['Dense', 'Hybrid', 'Hybrid+Rerank', 'Dense+Rerank']
+
+# nomic-embed-text (10 samples)
+nomic_ndcg    = [0.3000, 0.2316, 0.2384, 0.4000]
+nomic_mrr     = [0.3000, 0.2333, 0.2500, 0.4000]
+nomic_recall  = [0.3000, 0.3000, 0.3000, 0.4000]
+nomic_ar      = [0.5400, 0.3630, 0.2930, 0.3500]
+
+# qwen3-embedding (10 samples)
+qwen_ndcg    = [0.5000, 0.2979, 0.4106, 0.5000]
+qwen_mrr     = [0.5000, 0.3667, 0.5000, 0.5000]
+qwen_recall  = [0.5000, 0.5000, 0.5000, 0.5000]
+qwen_ar      = [0.4430, 0.7000, 0.5330, 0.6430]
 
 # ── Style ───────────────────────────────────────────────────────────────────
-BG       = '#0d1117'
-AX_BG    = '#161b22'
-GRID     = '#21262d'
-TEXT     = '#e6edf3'
-MUTED    = '#8b949e'
-ACCENT   = '#58a6ff'
-GREEN    = '#3fb950'
-PURPLE   = '#bc8cff'
-RED      = '#f85149'
-BAR_ALT  = '#1f6feb'
+BG    = '#0d1117'
+AXBG  = '#161b22'
+GRID  = '#21262d'
+TEXT  = '#e6edf3'
+MUTED = '#8b949e'
+NCOL  = '#58a6ff'   # nomic bars (blue)
+GCOL  = '#3fb950'   # qwen3 bars (green)
 
-fig, axes = plt.subplots(1, 4, figsize=(18, 5.5), dpi=130)
+fig, axes = plt.subplots(2, 2, figsize=(16, 11), dpi=130)
 fig.patch.set_facecolor(BG)
-for ax in axes:
-    ax.set_facecolor(AX_BG)
-    ax.grid(axis='y', color=GRID, linewidth=0.6)
-    for tick in ax.get_yticklabels():
-        tick.set_color(MUTED)
-    ax.tick_params(colors=MUTED, length=0)
+for row in axes:
+    for ax in row:
+        ax.set_facecolor(AXBG)
+        ax.grid(axis='y', color=GRID, linewidth=0.6)
+        for tick in ax.get_yticklabels():
+            tick.set_color(MUTED)
+        ax.tick_params(colors=MUTED, length=0)
 
-x = np.arange(len(modes))
-w = 0.55
-xlabels = modes
+x = np.arange(len(MODES))
+w = 0.36
 
-# Helper to style bar labels
-def label_bars(bars, color=TEXT):
+def label_bars(ax, bars, color):
     for bar in bars:
         h = bar.get_height()
-        label = f'{h:.2f}'
-        ax.text(bar.get_x() + bar.get_width() / 2, h + 0.015, label,
+        ax.text(bar.get_x() + bar.get_width() / 2, h + 0.018, f'{h:.2f}',
                 ha='center', va='bottom', color=color, fontsize=9.5, fontweight='bold')
 
-# ── Chart 1: NDCG@K ─────────────────────────────────────────────────────────
-ax = axes[0]
-# Highlight best bar
-best_ndcg = max(ndcg)
-bars = ax.bar(x, ndcg, w, color=[BAR_ALT if v == best_ndcg else ACCENT for v in ndcg], alpha=0.92, zorder=3)
-label_bars(bars)
-ax.set_xticks(x)
-ax.set_xticklabels(xlabels, color=TEXT, fontsize=9.5)
-ax.set_ylabel('NDCG@K', color=TEXT, fontsize=11)
-ax.set_title('Retrieval Quality (NDCG@K)', color=TEXT, fontsize=11, pad=10, fontweight='bold')
-ax.set_ylim(0, 0.62)
-ax.yaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter('%.2f'))
-# Star marker on best
-for i, v in enumerate(ndcg):
-    if v == best_ndcg:
-        ax.text(i, v + 0.055, '★ Best', ha='center', va='bottom', color=GREEN, fontsize=8.5, fontweight='bold')
+charts = [
+    (axes[0, 0], nomic_ndcg,   qwen_ndcg,   'NDCG@K',                  'Retrieval Quality (NDCG@K)',       0.68, 0.05),
+    (axes[0, 1], nomic_mrr,    qwen_mrr,    'MRR',                      'Mean Reciprocal Rank',              0.68, 0.05),
+    (axes[1, 0], nomic_recall, qwen_recall, 'Recall@K',                 'Recall@K (Retrieval Coverage)',    0.68, 0.05),
+    (axes[1, 1], nomic_ar,     qwen_ar,     'Answer Relevance',          'LLM Answer Relevance',              0.82, 0.08),
+]
 
-# ── Chart 2: MRR ────────────────────────────────────────────────────────────
-ax = axes[1]
-best_mrr = max(mrr)
-bars = ax.bar(x, mrr, w, color=[BAR_ALT if v == best_mrr else PURPLE for v in mrr], alpha=0.92, zorder=3)
-label_bars(bars)
-ax.set_xticks(x)
-ax.set_xticklabels(xlabels, color=TEXT, fontsize=9.5)
-ax.set_ylabel('MRR', color=TEXT, fontsize=11)
-ax.set_title('Mean Reciprocal Rank', color=TEXT, fontsize=11, pad=10, fontweight='bold')
-ax.set_ylim(0, 0.62)
-ax.yaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter('%.2f'))
-for i, v in enumerate(mrr):
-    if v == best_mrr:
-        ax.text(i, v + 0.055, '★ Best', ha='center', va='bottom', color=GREEN, fontsize=8.5, fontweight='bold')
+for ax, nomic_vals, qwen_vals, ylabel, title, ymax, ypad in charts:
+    b1 = ax.bar(x - w/2, nomic_vals, w, label='nomic-embed-text (768d)', color=NCOL, alpha=0.92, zorder=3)
+    b2 = ax.bar(x + w/2, qwen_vals,  w, label='qwen3-embedding (4096d)', color=GCOL, alpha=0.92, zorder=3)
+    label_bars(ax, b1, NCOL)
+    label_bars(ax, b2, GCOL)
+    ax.set_xticks(x)
+    ax.set_xticklabels(MODES, color=TEXT, fontsize=10.5, fontweight='bold')
+    ax.set_ylabel(ylabel, color=TEXT, fontsize=11.5)
+    ax.set_title(title, color=TEXT, fontsize=13, pad=12, fontweight='bold')
+    ax.set_ylim(0, ymax)
+    ax.yaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter('%.2f'))
+    ax.legend(loc='upper left', labelcolor=TEXT, facecolor=AXBG, edgecolor=GRID, fontsize=10.5, framealpha=0.8)
 
-# ── Chart 3: Recall@K ────────────────────────────────────────────────────────
-ax = axes[2]
-# Dense+Rerank also best for recall
-best_recall = max(recall)
-bars = ax.bar(x, recall, w, color=[BAR_ALT if v == best_recall else GREEN for v in recall], alpha=0.92, zorder=3)
-label_bars(bars)
-ax.set_xticks(x)
-ax.set_xticklabels(xlabels, color=TEXT, fontsize=9.5)
-ax.set_ylabel('Recall@K', color=TEXT, fontsize=11)
-ax.set_title('Recall@K (Coverage)', color=TEXT, fontsize=11, pad=10, fontweight='bold')
-ax.set_ylim(0, 0.62)
-ax.yaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter('%.2f'))
-for i, v in enumerate(recall):
-    if v == best_recall:
-        ax.text(i, v + 0.055, '★ Best', ha='center', va='bottom', color=GREEN, fontsize=8.5, fontweight='bold')
+    # Highlight qwen3 bars that beat nomic
+    for bar, nv, qv in zip(b2, nomic_vals, qwen_vals):
+        if qv > nv:
+            bar.set_edgecolor('#ffffff')
+            bar.set_linewidth(1.5)
 
-# ── Chart 4: Answer Relevance ───────────────────────────────────────────────
-ax = axes[3]
-best_ar = max(ans_rel)
-bars = ax.bar(x, ans_rel, w, color=[BAR_ALT if v == best_ar else RED for v in ans_rel], alpha=0.92, zorder=3)
-label_bars(bars)
-ax.set_xticks(x)
-ax.set_xticklabels(xlabels, color=TEXT, fontsize=9.5)
-ax.set_ylabel('Answer Relevance', color=TEXT, fontsize=11)
-ax.set_title('LLM Answer Relevance', color=TEXT, fontsize=11, pad=10, fontweight='bold')
-ax.set_ylim(0, 0.72)
-ax.yaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter('%.2f'))
-for i, v in enumerate(ans_rel):
-    if v == best_ar:
-        ax.text(i, v + 0.055, '★ Best', ha='center', va='bottom', color=GREEN, fontsize=8.5, fontweight='bold')
-
-# ── Super title ─────────────────────────────────────────────────────────────
-fig.suptitle('RAGEve Retrieval Benchmark  ·  100 SQuAD Questions  ·  nomic-embed-text (768d) + llama3.2  ·  top-5',
-             color=MUTED, fontsize=10.5, y=1.01, x=0.52)
+fig.suptitle(
+    'RAGEve Retrieval Benchmark  ·  SQuAD v1.1  ·  top-5  ·  LLM: llama3.2\n'
+    'nomic-embed-text (768d)  vs  qwen3-embedding (4096d)',
+    color=MUTED, fontsize=11, y=1.015, x=0.52
+)
 
 plt.tight_layout(pad=2.5)
-out = 'docs/assets/benchmark_chart.png'
-plt.savefig(out, dpi=150, bbox_inches='tight', facecolor=BG)
-print(f'Saved: {out}')
+for out, dpi in [('docs/assets/benchmark_chart.png', 150), ('docs/assets/benchmark_chart_hd.png', 200)]:
+    plt.savefig(out, dpi=dpi, bbox_inches='tight', facecolor=BG)
+    print(f'Saved: {out}  ({dpi}dpi)')
