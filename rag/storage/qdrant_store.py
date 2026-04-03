@@ -431,20 +431,9 @@ class QdrantStore:
 
         payload: dict[str, Any] = {
             "prefetch": [
-                {
-                    "query": {
-                        "name": DENSE_VECTOR_NAME,
-                        "vector": dense_query,
-                    },
-                    "limit": rrf_k,
-                },
-                {
-                    "query": {
-                        "name": SPARSE_VECTOR_NAME,
-                        "vector": sparse_query,
-                    },
-                    "limit": rrf_k,
-                },
+                # "vector" (not "query") is required in Qdrant 1.17+ prefetch items
+                {"vector": {"name": DENSE_VECTOR_NAME, "vector": dense_query}, "limit": rrf_k},
+                {"vector": sparse_query, "limit": rrf_k},
             ],
             "query": {"fusion": "rrf"},
             "limit": top_k,
