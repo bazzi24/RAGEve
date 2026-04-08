@@ -409,7 +409,7 @@ Upcoming:
 
 - 🐛 [Bug Reports](https://github.com/bazzi24/RAGEve/issues) — report issues with clear reproduction steps
 - 💡 [Feature Requests](https://github.com/bazzi24/RAGEve/issues) — open a discussion or issue
-- 🤝 [Contributing](#-contributing) — see below
+- 🤝 [Contributing](https://github.com/bazzi24/RAGEve/blob/main/CONTRIBUTING.md) — see below
 
 ---
 
