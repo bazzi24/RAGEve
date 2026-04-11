@@ -1,7 +1,7 @@
 [project]
 name = "rageve"
 version = "0.1.0"
-description = "Add your description here"
+description = "Local-first RAG platform — Ollama + Qdrant + FastAPI + Next.js. No cloud, no API keys, runs entirely on your machine."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
