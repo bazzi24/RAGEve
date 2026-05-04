@@ -1,7 +1,7 @@
 /* agents/page.module.css */
 
 .page {
-  max-width: 800px;
+  max-width: none;
 }
 
 .header {
