@@ -318,6 +318,11 @@ def _resolve_dataset_dir(root: Path, dataset_id: str) -> Path:
     return dataset_path
 
 
+def _sanitize_for_log(value: object) -> str:
+    """Return a log-safe single-line representation."""
+    return str(value).replace("\r", "\\r").replace("\n", "\\n")
+
+
 class FileProcessorService:
     def __init__(self) -> None:
         self.chunk_size = settings.default_chunk_size
@@ -423,7 +428,7 @@ class FileProcessorService:
 
         _log.debug(
             "[%s] File saved: %s (%.1f MB, MIME: %s)",
-            dataset_id,
+            _sanitize_for_log(dataset_id),
             safe_filename,
             len(content) / 1024 / 1024,
             mime_type if "mime_type" in locals() else "unknown",
