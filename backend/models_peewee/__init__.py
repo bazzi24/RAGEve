@@ -244,7 +244,7 @@ async def init_db() -> None:
             ],
             safe=True,
         )
-    _log.info("All tables initialized (database: %s)", MYSQL_CONFIG["database"])
+    _log.info("All tables initialized")
 
 
 def close_db() -> None:
