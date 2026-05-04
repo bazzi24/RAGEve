@@ -1,0 +1,154 @@
+/* SecondarySidebar.module.css
+ * Sub-navigation panel - monochrome theme integration
+ * Uses system design tokens for colors, spacing, and typography
+ */
+
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+}
+
+/* Navigation container */
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6, 1.5rem);
+  padding: var(--space-5, 1.25rem) var(--space-4, 1rem);
+}
+
+/* Section grouping */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: 0 var(--space-3);
+  margin-bottom: var(--space-1);
+}
+
+/* Navigation list */
+.navList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Individual navigation item */
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  position: relative;
+  margin: 0 2px;
+}
+
+.navItem:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Active state - white accent for monochrome theme */
+.navItem.active {
+  background: var(--bg-active);
+  color: var(--text-primary);
+  border-left: 3px solid var(--text-primary);
+  padding-left: calc(var(--space-3) - 2px);
+}
+
+.navItem.active:hover {
+  background: var(--bg-hover);
+}
+
+/* Icon styling */
+.navIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.navItem:hover .navIcon {
+  color: var(--text-secondary);
+}
+
+.navItem.active .navIcon {
+  color: var(--text-primary);
+}
+
+/* Label styling */
+.navLabel {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+/* Scrollbar styling */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Responsive: Narrower sidebar on tablet */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 200px;
+  }
+}
+
+/* Mobile: Hidden by default */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .navItem.active {
+    border-left-width: 2px;
+    padding-left: calc(var(--space-3) - 2px);
+  }
+}

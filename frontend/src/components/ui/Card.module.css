@@ -1,10 +1,20 @@
-/* Card.module.css */
+/* Card.module.css - Modern Elevated Design */
 
 .card {
   background-color: var(--bg-elevated);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius-lg);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 4px 12px rgba(0, 0, 0, 0.4);
   overflow: hidden;
+  transition: box-shadow var(--transition-base);
+}
+
+.card:hover {
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.35),
+    0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
 .header {
@@ -12,7 +22,12 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-4) var(--space-5);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-subtle, var(--border));
+  background: linear-gradient(
+    to right,
+    var(--bg-secondary),
+    var(--bg-elevated)
+  );
 }
 
 .title {
@@ -30,6 +45,22 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-5);
-  border-top: 1px solid var(--border);
-  background-color: var(--bg-tertiary);
+  border-top: 1px solid var(--border-subtle, var(--border));
+  background-color: var(--bg-secondary);
+}
+
+/* ======================================================
+   VARIANT: Extra Elevated (for Profile cards)
+   ====================================================== */
+.cardElevated {
+  border-radius: var(--radius-xl);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.4),
+    0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.cardElevated:hover {
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.45),
+    0 12px 32px rgba(0, 0, 0, 0.55);
 }

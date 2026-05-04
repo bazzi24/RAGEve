@@ -1,83 +1,253 @@
-/* Profile page styles - uses design tokens from globals.css */
+/* Profile Page - Modern Redesign
+ * Full-width, breathable layout with floating sections
+ */
 
+/* ======================================================
+   ROOT CONTAINER
+   ====================================================== */
 .container {
-  min-height: 100vh;
-  padding: var(--space-6) var(--space-4);
+  min-height: 100%;
+  padding: 0;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
 }
 
-.card {
-  width: 100%;
-  max-width: 640px;
+/* Alert messages - full width with side padding */
+.alert {
+  padding: var(--space-4);
+  margin: 0 var(--space-6) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  border: 1px solid transparent;
+  animation: slideIn var(--transition-base);
 }
 
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alertError {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.alertSuccess {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+}
+
+/* ======================================================
+   HEADER SECTION - Prominent, floating design
+   ====================================================== */
 .header {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
-  margin-bottom: var(--space-6);
+  gap: var(--space-6);
+  padding: var(--space-8) var(--space-6) var(--space-6);
+  position: relative;
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: var(--space-6);
+  right: var(--space-6);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+
+.avatarContainer {
+  position: relative;
+  flex-shrink: 0;
 }
 
 .avatar {
-  width: 64px;
-  height: 64px;
+  width: 88px;
+  height: 88px;
   border-radius: var(--radius-full);
-  background-color: var(--bg-tertiary);
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-muted);
-  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
 
-.titleArea {
+.avatarRing {
+  position: absolute;
+  inset: -3px;
+  border-radius: var(--radius-full);
+  background: conic-gradient(
+    from 0deg,
+    var(--border),
+    var(--text-muted),
+    var(--border),
+    var(--text-muted),
+    var(--border)
+  );
+  z-index: 0;
+  opacity: 0.5;
+}
+
+.verifiedBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border-radius: 9999px;
+}
+
+.headerContent {
   flex: 1;
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-1);
 }
 
 .title {
-  font-size: var(--text-2xl);
+  font-size: var(--text-3xl);
   font-weight: 700;
   color: var(--text-primary);
-  margin: 0 0 var(--space-1);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.verifiedBadge {
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-2);
 }
 
 .subtitle {
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-1);
+}
+
+.timestamp {
   font-size: var(--text-sm);
   color: var(--text-muted);
   margin: 0;
 }
 
-.section {
-  margin-bottom: var(--space-6);
+/* ======================================================
+   MAIN CONTENT AREA - breathable vertical layout
+   ====================================================== */
+.content {
+  padding: var(--space-6);
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
 }
 
-.section:last-of-type {
-  margin-bottom: var(--space-4);
+/* ======================================================
+   SECTIONS - floating card style with subtle elevation
+   ====================================================== */
+.section {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.section:hover {
+  border-color: var(--text-muted);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .sectionTitle {
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: var(--space-4);
-  padding-bottom: var(--space-2);
+  margin: 0 0 var(--space-5);
+  padding-bottom: var(--space-3);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   gap: var(--space-2);
 }
 
+.sectionTitle svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+}
+
+/* ======================================================
+   INFO GRID - responsive, breathable
+   ====================================================== */
 .infoGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-4);
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .infoGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .infoGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .infoItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.infoItem:hover {
+  background: var(--bg-hover);
+  border-color: var(--border);
+  transform: translateY(-1px);
+}
+
+.infoIcon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.infoContent {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
@@ -88,16 +258,14 @@
   font-weight: 500;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
 }
 
 .infoValue {
   font-size: var(--text-sm);
   color: var(--text-primary);
   word-break: break-word;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
+  line-height: 1.5;
 }
 
 .emailRow {
@@ -107,39 +275,125 @@
   flex-wrap: wrap;
 }
 
-.alert {
-  padding: var(--space-3);
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  margin-bottom: var(--space-4);
-  border: 1px solid var(--border);
-}
-
-.alertError {
-  background-color: var(--error-muted);
-  color: var(--error);
-}
-
-.alertSuccess {
-  background-color: var(--bg-tertiary);
-  color: var(--success);
-}
-
+/* ======================================================
+   FORMS - modern, breathable layout
+   ====================================================== */
 .form {
   display: flex;
   flex-direction: column;
+  gap: var(--space-5);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr;
   gap: var(--space-4);
 }
 
-.logoutSection {
-  margin-top: var(--space-6);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--border);
+@media (min-width: 768px) {
+  .formGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
+.input {
+  width: 100%;
+}
+
+/* ======================================================
+   LOGOUT SECTION - prominent but elegant
+   ====================================================== */
+.logoutSection {
+  margin-top: var(--space-4);
+  padding: var(--space-5);
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.logoutSection:hover {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.logoutContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.logoutInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.logoutTitle {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-1);
+}
+
+.logoutDesc {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ======================================================
+   LOADING STATE
+   ====================================================== */
 .loadingContainer {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 50vh;
+  min-height: 60vh;
+}
+
+/* ======================================================
+   RESPONSIVE ADJUSTMENTS
+   ====================================================== */
+@media (max-width: 640px) {
+  .header {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .titleRow {
+    justify-content: center;
+  }
+
+  .subtitle {
+    justify-content: center;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .avatar svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .title {
+    font-size: var(--text-2xl);
+  }
+
+  .content {
+    padding: var(--space-3);
+  }
+
+  .section {
+    padding: var(--space-4);
+  }
+
+  .logoutContent {
+    flex-direction: column;
+    text-align: center;
+  }
 }

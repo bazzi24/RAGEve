@@ -20,3 +20,7 @@
   overflow-y: auto;
   padding: var(--space-8);
 }
+
+.content.noPadding {
+  padding: 0;
+}
