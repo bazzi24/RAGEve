@@ -49,6 +49,11 @@ from rag.storage.qdrant_store import QdrantStore
 
 _log = logging.getLogger(__name__)
 
+
+def _sanitize_for_log(value: str) -> str:
+    """Sanitize untrusted text before logging to prevent log injection."""
+    return value.replace("\r", "").replace("\n", "")
+
 router = APIRouter(prefix="/knowledgebases", tags=["knowledgebases"])
 
 
@@ -250,6 +255,7 @@ async def delete_knowledgebase(
 ) -> None:
     """Delete a knowledge base and all its documents, files, and tasks."""
     await _ensure_kb_access(user, kb_id)
+    safe_kb_id = _sanitize_for_log(kb_id)
 
     store = get_knowledge_base_store()
     cache_service = get_cache_service()
@@ -276,22 +282,22 @@ async def delete_knowledgebase(
             qdrant: QdrantStore = get_ingestion_service().qdrant
             qdrant.delete_collection(kb_id)
         except Exception as e:
-            _log.warning("Failed to delete Qdrant collection %s: %s", kb_id, e)
+            _log.warning("Failed to delete Qdrant collection %s: %s", safe_kb_id, e)
 
         # Invalidate cache AFTER successful deletion
         try:
             invalidated = await cache_service.invalidate_collection(kb_id)
             _log.info(
-                "Invalidated %d cached items for KB %s (delete)", invalidated, kb_id
+                "Invalidated %d cached items for KB %s (delete)", invalidated, safe_kb_id
             )
         except Exception as e:
             _log.warning(
-                "Cache invalidation failed for KB %s (deletion succeeded): %s", kb_id, e
+                "Cache invalidation failed for KB %s (deletion succeeded): %s", safe_kb_id, e
             )
 
     except Exception as e:
         # On any failure after existence check, attempt cache rollback if we invalidated prematurely
-        _log.error("Failed to delete knowledge base %s: %s", kb_id, e)
+        _log.error("Failed to delete knowledge base %s: %s", safe_kb_id, e)
         raise HTTPException(
             status_code=500, detail=f"Failed to delete knowledge base: {str(e)}"
         )
