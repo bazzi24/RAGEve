@@ -165,7 +165,15 @@ async def lifespan(app: FastAPI):
     _log.info("Ollama      : %s", settings.ollama_base_url)
     _log.info("Qdrant      : %s", settings.qdrant_url)
     _log.info("CORS origins: %s", _allowed_origins)
-    _log.info("Trusted proxies (XFF): %s", settings.trusted_proxy_count)
+    trusted_proxy_enabled = False
+    try:
+        trusted_proxy_enabled = int(settings.trusted_proxy_count) > 0
+    except (ValueError, TypeError):
+        trusted_proxy_enabled = False
+    _log.info(
+        "Trusted proxies (XFF): %s",
+        "enabled" if trusted_proxy_enabled else "disabled",
+    )
     try:
         rate_limit = int(settings.rate_limit_per_minute)
     except (ValueError, TypeError):
