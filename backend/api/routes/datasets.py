@@ -893,11 +893,18 @@ async def _stream_upload_and_ingest(
         try:
             result = await task
         except Exception as exc:
+            _log.exception(
+                "Streaming ingest failed for dataset_id=%s file=%s index=%s/%s",
+                dataset_id,
+                upload.filename,
+                idx,
+                total_files,
+            )
             yield json.dumps(
                 {
                     "event": "error",
                     "stage": "failed",
-                    "message": str(exc),
+                    "message": "An internal error occurred while processing the file.",
                     "progress": int(((idx - 1) / max(total_files, 1)) * 100),
                     "dataset_id": dataset_id,
                     "file": upload.filename,
