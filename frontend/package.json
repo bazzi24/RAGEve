@@ -10,7 +10,7 @@
     "lint": "eslint . --max-warnings=0"
   },
   "dependencies": {
-    "lucide-react": "^1.11.0",
+    "lucide-react": "^1.14.0",
     "next": "16.2.4",
     "pdfjs-dist": "^5.7.284",
     "react": "^19.0.0",
