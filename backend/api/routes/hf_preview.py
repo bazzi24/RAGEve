@@ -90,7 +90,10 @@ async def preview_hf_dataset(
 
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:
-            hub_resp = await client.get(f"{HF_HUB_API}/datasets/{dataset_id}")
+            hub_resp = await client.get(
+                f"{HF_HUB_API}/datasets",
+                params={"dataset": dataset_id},
+            )
             if hub_resp.status_code == 200:
                 hub_data = hub_resp.json()
                 description = hub_data.get("description")
