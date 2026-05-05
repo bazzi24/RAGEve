@@ -188,10 +188,12 @@ async def lifespan(app: FastAPI):
     else:
         _log.info("HF Token    : not set (public datasets only)")
     if settings.db_url:
-        db_desc = (
-            settings.db_url.split("@")[1] if "@" in settings.db_url else settings.db_url
+        _log.info(
+            "Chat DB     : MySQL (%s:%s/%s)",
+            settings.mysql_host,
+            settings.mysql_port,
+            settings.mysql_dbname,
         )
-        _log.info("Chat DB     : MySQL (%s)", db_desc)
     else:
         _log.info("Chat DB     : SQLite (%s)", settings.db_path)
     _log.info(
