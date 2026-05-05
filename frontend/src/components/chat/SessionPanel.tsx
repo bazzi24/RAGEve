@@ -5,6 +5,7 @@ import { createSession, deleteSession, listSessions } from "@/lib/api/chat";
 import { useChatStore } from "@/stores/useChatStore";
 import { useToastStore } from "@/stores/useToastStore";
 import { Button } from "@/components/ui/Button";
+import { getUTCTimestamp, formatLocalDate } from "@/lib/utils/date";
 import styles from "./SessionPanel.module.css";
 
 interface SessionPanelProps {
@@ -181,7 +182,9 @@ export function SessionPanel({
 
 function formatRelativeTime(isoString: string): string {
   if (!isoString) return "";
-  const diff = Date.now() - new Date(isoString).getTime();
+  const timestamp = getUTCTimestamp(isoString);
+  if (!timestamp) return "";
+  const diff = Date.now() - timestamp;
   const minutes = Math.floor(diff / 60_000);
   if (minutes < 1) return "just now";
   if (minutes < 60) return `${minutes}m ago`;
@@ -189,5 +192,5 @@ function formatRelativeTime(isoString: string): string {
   if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
   if (days < 7) return `${days}d ago`;
-  return new Date(isoString).toLocaleDateString();
+  return formatLocalDate(isoString);
 }

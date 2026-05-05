@@ -3,6 +3,7 @@
 import type { KbDocumentResponse } from "@/lib/types";
 import { Badge } from "@/components/ui/Badge";
 import { Accordion, AccordionItem } from "@/components/ui/Accordion";
+import { formatLocalDate } from "@/lib/utils/date";
 import styles from "./DocumentItem.module.css";
 
 interface DocumentItemProps {
@@ -18,7 +19,7 @@ function getStatus(progress: number): string {
 
 function formatDate(dateStr: string | null | undefined): string {
   if (!dateStr) return "—";
-  return new Date(dateStr).toLocaleDateString();
+  return formatLocalDate(dateStr);
 }
 
 function formatBytes(bytes: number): string {

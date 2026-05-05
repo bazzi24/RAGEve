@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { DocumentList } from "./DocumentList";
 import { IngestInterface } from "./IngestInterface";
 import { getKnowledgebase } from "@/lib/api/knowledgebases";
+import { formatLocalDate } from "@/lib/utils/date";
 import styles from "./DatasetCard.module.css";
 
 interface DatasetCardProps {
@@ -122,7 +123,7 @@ export function DatasetCard({
                 {kbDetail.create_date && (
                   <span>
                     Created:{" "}
-                    {new Date(kbDetail.create_date).toLocaleDateString()}
+                    {formatLocalDate(kbDetail.create_date)}
                   </span>
                 )}
               </div>

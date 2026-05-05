@@ -7,6 +7,7 @@ import { validateModels } from "@/lib/api/ollama";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import type { OllamaModelDetail } from "@/lib/types";
+import { formatLocalDate } from "@/lib/utils/date";
 import styles from "./page.module.css";
 
 function fmtBytes(bytes: number): string {
@@ -18,7 +19,7 @@ function fmtBytes(bytes: number): string {
 function fmtDate(iso: string | null): string {
   if (!iso) return "—";
   try {
-    return new Date(iso).toLocaleDateString(undefined, {
+    return formatLocalDate(iso, {
       year: "numeric",
       month: "short",
       day: "numeric",

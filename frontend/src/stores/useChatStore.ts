@@ -9,6 +9,7 @@ import type {
   RerankerEntry,
 } from "@/lib/types";
 import { normalizeLLMResponse } from "@/lib/utils/text";
+import { parseUTCDate } from "@/lib/utils/date";
 
 interface ChatState {
   // ── Session state ──────────────────────────────────────────────────────────
@@ -66,7 +67,7 @@ function _toItem(m: ChatMessageStored, _fallbackId: string): ChatMessageItem {
     role: m.role,
     content: normalizeLLMResponse(m.content),
     sources: m.sources ?? undefined,
-    timestamp: m.created_at ? new Date(m.created_at).getTime() : Date.now(),
+    timestamp: m.created_at ? parseUTCDate(m.created_at)?.getTime() ?? Date.now() : Date.now(),
     storedMessageId: m.message_id,
   };
 }
