@@ -198,7 +198,7 @@ async def _stream_rag(
         return
     except Exception as e:
         _log.exception("Streaming RAG failed for dialog %s", dialog.id)
-        yield f"data: {_json.dumps({'event': 'error', 'error': str(e)})}\n\n"
+        yield f"data: {_json.dumps({'event': 'error', 'error': 'An internal error occurred'})}\n\n"
         return
 
 
