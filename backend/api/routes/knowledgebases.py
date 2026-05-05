@@ -540,11 +540,9 @@ async def run_ingestion_background(
             progress_msg="Downloading file from MinIO",
         )
         file_bytes = await minio_client.download_file(minio_key)
-        filename = Path(minio_key).name
-        raw_suffix = Path(filename).suffix
-        safe_suffix = (
-            raw_suffix if re.fullmatch(r"\.[A-Za-z0-9]{1,10}", raw_suffix) else ".bin"
-        )
+        # SECURITY: Do not derive local temp-file path components from user-controlled keys.
+        # Use a constant safe suffix for ingestion scratch files.
+        safe_suffix = ".bin"
         # Write to temp file (delete=False so it persists for ingestion)
         tmp = tempfile.NamedTemporaryFile(suffix=safe_suffix, delete=False)
         tmp.write(file_bytes)
