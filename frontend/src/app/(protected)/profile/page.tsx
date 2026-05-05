@@ -62,7 +62,7 @@ function ProfileHeader({ user }: ProfileHeaderProps) {
         </div>
         <p className={styles.subtitle}>@{user.username}</p>
         <p className={styles.timestamp}>
-          Member since {user.created_at ? formatLocalDate(user.created_at) : "N/A"}
+          Member since {user.created_at ? new Date(user.created_at).toLocaleDateString() : "N/A"}
         </p>
       </div>
     </div>
@@ -135,12 +135,12 @@ function InfoCard({ user }: InfoCardProps) {
         <InfoItem
           icon={<Calendar size={18} />}
           label="Member since"
-          value={user.created_at ? formatLocalDate(user.created_at) : "N/A"}
+          value={user.created_at ? new Date(user.created_at).toLocaleDateString() : "N/A"}
         />
         <InfoItem
           icon={<Clock size={18} />}
           label="Last login"
-          value={user.last_login_at ? formatLocalDateTime(user.last_login_at) : "N/A"}
+          value={user.last_login_at ? new Date(user.last_login_at).toLocaleString() : "N/A"}
         />
       </div>
     </section>
