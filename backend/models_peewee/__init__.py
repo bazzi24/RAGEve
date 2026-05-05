@@ -153,7 +153,7 @@ def _init_database() -> RetryingPooledMySQLDatabase:
             cursor.execute(
                 f"CREATE DATABASE IF NOT EXISTS `{db_name}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
             )
-            _log.info("Database '%s' created or already exists", db_name)
+            _log.info("Database created or already exists")
         conn.close()
     except Exception as e:
         _log.error("Failed to create database: %s", e)
