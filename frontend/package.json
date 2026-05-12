@@ -13,7 +13,7 @@
     "lucide-react": "^1.14.0",
     "next": "16.2.4",
     "pdfjs-dist": "^5.7.284",
-    "react": "^19.0.0",
+    "react": "^19.2.6",
     "react-dom": "^19.2.5",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
