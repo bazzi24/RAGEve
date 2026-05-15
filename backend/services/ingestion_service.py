@@ -17,6 +17,7 @@ from rag.embedding.sparse_embedder import SparseEmbedder
 from rag.ingestion.extractors import Extractors
 from rag.storage.qdrant_store import ChunkRecord, QdrantStore
 from rag.utils.memory import recommend_embed_batch_size
+from backend.utils.log_sanitizer import sanitize_key
 
 SUPPORTED_EXTENSIONS = {
     ".pdf",
@@ -100,11 +101,11 @@ class IngestionService:
     ) -> dict:
         ext = file_path.suffix.lower()
         if ext not in SUPPORTED_EXTENSIONS:
-            _log.error("[%s] Unsupported file type: %s", dataset_id, ext)
+            _log.error("[%s] Unsupported file type: %s", sanitize_key(dataset_id), ext)
             raise ValueError(f"Unsupported file: {ext}")
 
         t0 = time.monotonic()
-        _log.info("[%s] Starting: %s → %s", dataset_id, file_path.name, dataset_id)
+        _log.info("[%s] Starting: %s → %s", sanitize_key(dataset_id), sanitize_key(file_path.name), sanitize_key(dataset_id))
 
         await _emit_progress(
             progress_callback,
@@ -196,7 +197,7 @@ class IngestionService:
         else:
             raise ValueError(f"Unsupported: {ext}")
 
-        _log.debug("[%s] Extracted %d chars", dataset_id, len(raw_text))
+        _log.debug("[%s] Extracted %d chars", sanitize_key(dataset_id), len(raw_text))
 
         # ── 2. Quality analysis → profile selection ────────────────────────
         await _emit_progress(
@@ -436,7 +437,7 @@ class IngestionService:
                 except Exception as exc:
                     _log.error(
                         "[%s] Upsert failed at batch %d-%d: %s",
-                        dataset_id,
+                        sanitize_key(dataset_id),
                         batch_start,
                         batch_end,
                         exc,

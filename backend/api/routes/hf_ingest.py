@@ -23,6 +23,7 @@ from backend.api.routes import hf_status
 from backend.api.routes._limiter import limiter
 from backend.config_loader import settings
 from backend.models_peewee import User
+from backend.utils.log_sanitizer import sanitize_key
 
 _log = logging.getLogger("app")
 
@@ -190,8 +191,8 @@ async def _run_hf_background_ingest(
         )
         raise
 
-    except Exception as exc:
-        _log.error("HF ingest failed: ingest_id=%s error=%s", ingest_id, exc)
+    except Exception:
+        _log.exception("HF ingest failed: ingest_id=%s", sanitize_key(ingest_id))
         await hf_status._set_hf_ingest_status(
             ingest_id,
             status="failed",

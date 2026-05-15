@@ -23,6 +23,7 @@ from backend.services.auth import (
 from backend.services.database import run_db_operation
 from backend.services.redis_client import get_redis_client
 from backend.services.tenant_user_store import get_tenant_user_store
+from backend.utils.log_sanitizer import sanitize_key
 
 _log = logging.getLogger(__name__)
 
@@ -372,7 +373,7 @@ async def _record_failed_login(request: Request, email: str) -> None:
             await client.expire(ip_attempts_key, 24 * 60 * 60)
 
         _log.warning(
-            "Failed login attempt #%d for email=%s from IP=%s", count, email, client_ip
+            "Failed login attempt #%d for email=%s from IP=%s", count, sanitize_key(email), sanitize_key(client_ip)
         )
 
         # If threshold reached, lock the account
@@ -380,9 +381,9 @@ async def _record_failed_login(request: Request, email: str) -> None:
             await client.set(lock_key, "1", ex=LOGIN_LOCK_DURATION_SECONDS)
             _log.warning(
                 "Account locked for email=%s due to %d failed attempts (IP=%s)",
-                email,
+                sanitize_key(email),
                 count,
-                client_ip,
+                sanitize_key(client_ip),
             )
     except Exception as e:
         _log.warning("Failed to record login attempt: %s", e)

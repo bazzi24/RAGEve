@@ -41,6 +41,7 @@ from backend.schemas.chat_history import (
 )
 from backend.services.chat_store import get_chat_store
 from backend.services.ingestion_factory import get_agent_store, get_rag_pipeline
+from backend.utils.log_sanitizer import sanitize_key
 
 _log = logging.getLogger(__name__)
 router = APIRouter(prefix="/legacy/chat", tags=["chat-history"])
@@ -331,7 +332,7 @@ async def _stream_with_history(
             status_code=504, detail="Request timed out after 120 seconds"
         ) from exc
     except Exception as exc:
-        _log.exception("Streaming chat failed for session %s", session_id)
+        _log.exception("Streaming chat failed for session %s", sanitize_key(session_id))
         yield _json.dumps(
             {
                 "event": "error",

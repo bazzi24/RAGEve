@@ -22,6 +22,7 @@ from typing import Tuple
 from fastapi import UploadFile
 
 from backend.config_loader import settings
+from backend.utils.log_sanitizer import sanitize_key
 from rag.ingestion.pipeline import SUPPORTED_EXTENSIONS, run_deepdoc_ingestion
 
 try:
@@ -428,8 +429,8 @@ class FileProcessorService:
 
         _log.debug(
             "[%s] File saved: %s (%.1f MB, MIME: %s)",
-            dataset_id,
-            safe_filename,
+            sanitize_key(dataset_id),
+            sanitize_key(safe_filename),
             len(content) / 1024 / 1024,
             mime_type if "mime_type" in locals() else "unknown",
         )

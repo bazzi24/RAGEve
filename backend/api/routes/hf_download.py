@@ -22,6 +22,7 @@ from backend.api.routes import hf_status
 from backend.api.routes._limiter import limiter
 from backend.config_loader import settings
 from backend.models_peewee import User
+from backend.utils.log_sanitizer import sanitize_key
 from backend.schemas.huggingface import (
     HuggingFaceDownloadRequest,
     HuggingFaceDownloadResponse,
@@ -72,7 +73,7 @@ async def _download_hf_dataset_to_server(
         target_dir = data_root / "hf" / safe_id
         _log.info(
             "HF download starting: %s → %s (auto_ingest=%s)",
-            dataset_id,
+            sanitize_key(dataset_id),
             target_dir,
             auto_ingest,
         )
@@ -284,7 +285,7 @@ async def _download_hf_dataset_to_server(
 
                 _log.info(
                     "HF download: %s complete — %d rows, %d splits",
-                    dataset_id,
+                    sanitize_key(dataset_id),
                     rows_total,
                     len(downloaded_splits),
                 )
@@ -416,7 +417,7 @@ async def _download_hf_dataset_to_server(
                         ingest_message=f"Ingested {result.get('rows_processed', 0):,} rows, {result.get('chunks_embedded', 0):,} chunks",
                     )
                 except Exception as exc:
-                    _log.error("Auto-ingest failed for %s: %s", dataset_id, exc)
+                    _log.exception("Auto-ingest failed for %s", sanitize_key(dataset_id))
                     hf_status._set_download_status(
                         dataset_id,
                         status="completed",
@@ -442,8 +443,8 @@ async def _download_hf_dataset_to_server(
                     columns=columns,
                 )
 
-        except Exception as exc:  # noqa: BLE001
-            _log.error("HF download failed for %s: %s", dataset_id, exc)
+        except Exception:  # noqa: BLE001
+            _log.exception("HF download failed for %s", sanitize_key(dataset_id))
             hf_status._cleanup_partial_dataset(dataset_id, data_root)
             hf_status._set_download_status(
                 dataset_id,

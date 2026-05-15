@@ -34,12 +34,11 @@ class JSONTextField(peewee.TextField):
             return {}
         try:
             return json.loads(value)
-        except (json.JSONDecodeError, TypeError) as e:
+        except (json.JSONDecodeError, TypeError):
             # Log warning with field context for debugging malformed JSON
             _log.warning(
-                "JSONTextField: Failed to decode JSON value (truncated: %s, error: %s)",
+                "JSONTextField: Failed to decode JSON value (truncated: %s)",
                 value[:100] if isinstance(value, str) else type(value),
-                str(e),
             )
             # Return empty dict as safe fallback for non-critical fields
             return {}

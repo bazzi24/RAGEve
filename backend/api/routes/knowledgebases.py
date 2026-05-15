@@ -9,7 +9,6 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
-import re
 import tempfile
 import time as _time
 from pathlib import Path
@@ -31,6 +30,7 @@ from fastapi import (
 _background_tasks: set[asyncio.Task] = set()
 
 from backend.api.dependencies import get_current_user
+from backend.utils.log_sanitizer import sanitize_key
 from backend.api.routes._limiter import limiter
 from backend.config_loader import settings
 from backend.models_peewee import User
@@ -49,6 +49,7 @@ from backend.services.ingestion_factory import get_ingestion_service
 from backend.services.knowledge_base_store import get_knowledge_base_store
 from backend.services.minio_client import get_minio_client
 from backend.services.tenant_user_store import get_tenant_user_store
+from backend.utils.log_sanitizer import sanitize_key
 from rag.ingestion.pipeline import SUPPORTED_EXTENSIONS
 from rag.storage.qdrant_store import QdrantStore
 
@@ -281,7 +282,7 @@ async def delete_knowledgebase(
             qdrant: QdrantStore = get_ingestion_service().qdrant
             qdrant.delete_collection(kb_id)
         except Exception as e:
-            _log.warning("Failed to delete Qdrant collection %s: %s", kb_id, e)
+            _log.warning("Failed to delete Qdrant collection %s: %s", sanitize_key(kb_id), e)
 
         # Invalidate cache AFTER successful deletion
         try:
@@ -296,9 +297,9 @@ async def delete_knowledgebase(
 
     except Exception as e:
         # On any failure after existence check, attempt cache rollback if we invalidated prematurely
-        _log.error("Failed to delete knowledge base %s: %s", kb_id, e)
+        _log.exception("Failed to delete knowledge base %s", sanitize_key(kb_id))
         raise HTTPException(
-            status_code=500, detail=f"Failed to delete knowledge base: {str(e)}"
+            status_code=500, detail="Failed to delete knowledge base"
         )
 
 
@@ -413,11 +414,11 @@ async def upload_files(
                 await minio_client.upload_file(
                     minio_key, file_bytes, content_type=mime_type
                 )
-            except Exception as e:
-                _log.error("Failed to upload file to MinIO: %s", e)
+            except Exception:
+                _log.exception("Failed to upload file to MinIO for %s", sanitize_key(kb_id))
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=f"Failed to store file: {str(e)}",
+                    detail="Failed to store file",
                 )
 
             # Create File record
@@ -563,9 +564,9 @@ async def run_ingestion_background(
         # Invalidate cache for this knowledge base after successful ingestion
         try:
             invalidated = await cache_service.invalidate_collection(kb_id)
-            _log.info("Invalidated %d cached items for KB %s", invalidated, kb_id)
+            _log.info("Invalidated %d cached items for KB %s", invalidated, sanitize_key(kb_id))
         except Exception as e:
-            _log.warning("Cache invalidation failed for KB %s: %s", kb_id, e)
+            _log.warning("Cache invalidation failed for KB %s: %s", sanitize_key(kb_id), e)
 
         # Update document as complete
         await run_db_operation(
@@ -581,17 +582,17 @@ async def run_ingestion_background(
 
         # Update task to complete
         await run_db_operation(store.complete_task, task_id, duration=elapsed)
-        _log.info("Ingestion completed for doc %s (task %s)", doc_id, task_id)
+        _log.info("Ingestion completed for doc %s (task %s)", sanitize_key(doc_id), sanitize_key(task_id))
 
     except Exception as e:
-        _log.exception("Ingestion failed for doc %s (task %s)", doc_id, task_id)
+        _log.exception("Ingestion failed for doc %s (task %s)", sanitize_key(doc_id), sanitize_key(task_id))
         # Update task and document with failure - wrap each to avoid cascading errors
         try:
             await run_db_operation(
                 store.update_task_progress,
                 task_id,
                 progress=-1.0,  # negative indicates error
-                msg=f"Error: {str(e)[:200]}",
+                msg="Error: ingestion failed",
             )
         except Exception as db_err:
             _log.error("Failed to update task error status: %s", db_err)
@@ -601,7 +602,7 @@ async def run_ingestion_background(
                 store.update_document_progress,
                 doc_id,
                 progress=-1.0,
-                progress_msg=f"Ingestion failed: {str(e)[:200]}",
+                progress_msg="Ingestion failed",
             )
         except Exception as db_err:
             _log.error("Failed to update document error status: %s", db_err)
@@ -805,11 +806,11 @@ async def upload_file_to_document(
             await minio_client.upload_file(
                 minio_key, file_bytes, content_type=mime_type
             )
-        except Exception as e:
-            _log.error("Failed to upload file to MinIO: %s", e)
+        except Exception:
+            _log.exception("Failed to upload file to MinIO for doc %s", sanitize_key(doc_id))
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Failed to store file: {str(e)}",
+                detail="Failed to store file",
             )
 
         # Create File record

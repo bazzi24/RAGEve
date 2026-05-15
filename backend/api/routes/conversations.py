@@ -33,6 +33,7 @@ from backend.services.database import run_db_operation
 from backend.services.dialog_store import get_dialog_store
 from backend.services.ingestion_factory import get_rag_pipeline
 from backend.services.tenant_user_store import get_tenant_user_store
+from backend.utils.log_sanitizer import sanitize_key
 
 _log = logging.getLogger(__name__)
 router = APIRouter(prefix="/conversations", tags=["conversations"])
@@ -420,7 +421,7 @@ async def chat_stream_with_conversation(
             status_code=504, detail="Request timed out after 120 seconds"
         ) from exc
     except Exception as exc:
-        _log.exception("Streaming chat failed for conversation %s", conversation_id)
+        _log.exception("Streaming chat failed for conversation %s", sanitize_key(conversation_id))
         yield _json.dumps(
             {
                 "event": "error",

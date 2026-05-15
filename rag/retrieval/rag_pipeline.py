@@ -43,6 +43,7 @@ from backend.services.cache_service import get_cache_service
 
 try:
     from backend.config_loader import get_settings
+    from backend.utils.log_sanitizer import sanitize_key
     HAS_CONFIG_LOADER = True
 except ImportError:
     HAS_CONFIG_LOADER = False
@@ -701,7 +702,7 @@ class RAGPipeline:
         if use_hybrid and self.sparse_embedder is not None:
             _log.info(
                 "[%s] Retrieval: hybrid (dense+sparse) top_k=%d → %d chunks [CACHE MISS]",
-                collection_name,
+                sanitize_key(collection_name),
                 top_k,
                 overfetch_k,
             )
@@ -721,7 +722,7 @@ class RAGPipeline:
             )
             _log.info(
                 "[%s] Hybrid search: %d results, max_score=%.4f",
-                collection_name,
+                sanitize_key(collection_name),
                 len(chunks),
                 chunks[0].score if chunks else 0.0,
             )
@@ -729,7 +730,7 @@ class RAGPipeline:
         else:
             _log.info(
                 "[%s] Retrieval: dense-only top_k=%d → %d chunks [CACHE MISS]",
-                collection_name,
+                sanitize_key(collection_name),
                 top_k,
                 overfetch_k,
             )
@@ -743,7 +744,7 @@ class RAGPipeline:
             )
             _log.info(
                 "[%s] Dense search: %d results, max_score=%.4f",
-                collection_name,
+                sanitize_key(collection_name),
                 len(chunks),
                 chunks[0].score if chunks else 0.0,
             )
@@ -773,7 +774,7 @@ class RAGPipeline:
                 )
                 _log.debug(
                     "[%s] Cached %d search results (hybrid=%s)",
-                    collection_name,
+                    sanitize_key(collection_name),
                     len(chunks),
                     use_hybrid,
                 )

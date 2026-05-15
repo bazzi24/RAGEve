@@ -15,6 +15,7 @@ from botocore.client import Config
 from botocore.exceptions import ClientError
 
 from backend.config_loader import get_settings
+from backend.utils.log_sanitizer import sanitize_key
 
 _log = logging.getLogger(__name__)
 
@@ -55,24 +56,24 @@ class MinIOClient:
 
         try:
             self.client.head_bucket(Bucket=self.bucket)
-            _log.debug("MinIO bucket '%s' exists", self.bucket)
+            _log.debug("MinIO bucket '%s' exists", sanitize_key(self.bucket))
         except ClientError as e:
             error_code = e.response.get("Error", {}).get("Code", "")
             if error_code == "404":
                 try:
                     self.client.create_bucket(Bucket=self.bucket)
-                    _log.info("Created MinIO bucket '%s'", self.bucket)
+                    _log.info("Created MinIO bucket '%s'", sanitize_key(self.bucket))
                 except ClientError as create_err:
-                    _log.warning("Could not create MinIO bucket '%s': %s", self.bucket, create_err)
+                    _log.warning("Could not create MinIO bucket '%s': %s", sanitize_key(self.bucket), create_err)
             elif error_code == "403":
                 _log.warning(
-                    "Access denied for MinIO bucket '%s' - check credentials", self.bucket
+                    "Access denied for MinIO bucket '%s' - check credentials", sanitize_key(self.bucket)
                 )
             else:
-                _log.warning("Could not verify MinIO bucket '%s': %s", self.bucket, e)
+                _log.warning("Could not verify MinIO bucket '%s': %s", sanitize_key(self.bucket), e)
         except Exception as e:
             # Catch any other exceptions (connection errors, timeouts, etc.)
-            _log.warning("Could not connect to MinIO to verify bucket '%s': %s", self.bucket, e)
+            _log.warning("Could not connect to MinIO to verify bucket '%s': %s", sanitize_key(self.bucket), e)
 
     def _get_key(self, path: str) -> str:
         """Build full object key with prefix."""
@@ -108,10 +109,10 @@ class MinIOClient:
                 **extra_args,
             )
             url = f"{self.endpoint}/{self.bucket}/{full_key}"
-            _log.debug("Uploaded to MinIO: %s", full_key)
+            _log.debug("Uploaded to MinIO: %s", sanitize_key(full_key))
             return url
         except ClientError as e:
-            _log.error("Failed to upload %s: %s", full_key, e)
+            _log.error("Failed to upload %s: %s", sanitize_key(full_key), e)
             raise
 
     async def download_file(self, key: str) -> bytes:
@@ -129,10 +130,10 @@ class MinIOClient:
         try:
             response = self.client.get_object(Bucket=self.bucket, Key=full_key)
             data = response["Body"].read()
-            _log.debug("Downloaded from MinIO: %s", full_key)
+            _log.debug("Downloaded from MinIO: %s", sanitize_key(full_key))
             return data
         except ClientError as e:
-            _log.error("Failed to download %s: %s", full_key, e)
+            _log.error("Failed to download %s: %s", sanitize_key(full_key), e)
             raise
 
     async def delete_file(self, key: str) -> None:

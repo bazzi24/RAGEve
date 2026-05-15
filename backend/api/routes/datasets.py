@@ -32,6 +32,7 @@ from backend.schemas.datasets import (
     IngestSubmitResponse,
 )
 from backend.services.file_processor import FileProcessorService
+from backend.utils.log_sanitizer import sanitize_key
 from rag.deepdoc.quality_scorer import ChunkProfile
 from rag.ingestion.pipeline import SUPPORTED_EXTENSIONS
 
@@ -337,11 +338,11 @@ async def _run_background_ingest(
                     message=f"Completed {original_filename}",
                 )
 
-            except Exception as exc:
+            except Exception:
                 _log.exception(
                     "Ingest failed for file %s in ingest_id=%s",
-                    original_filename,
-                    ingest_id,
+                    sanitize_key(original_filename),
+                    sanitize_key(ingest_id),
                 )
                 await _set_ingest_status(
                     ingest_id,
@@ -895,8 +896,8 @@ async def _stream_upload_and_ingest(
         except Exception as exc:
             _log.exception(
                 "Streaming ingest failed for dataset_id=%s file=%s index=%s/%s",
-                dataset_id,
-                upload.filename,
+                sanitize_key(dataset_id),
+                sanitize_key(upload.filename),
                 idx,
                 total_files,
             )
