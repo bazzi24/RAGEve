@@ -10,7 +10,7 @@
     "lint": "eslint . --max-warnings=0"
   },
   "dependencies": {
-    "lucide-react": "^1.14.0",
+    "lucide-react": "^1.16.0",
     "next": "16.2.6",
     "pdfjs-dist": "^5.7.284",
     "react": "^19.0.0",
@@ -20,12 +20,12 @@
     "zustand": "^5.0.13"
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^16.2.4",
+    "@next/eslint-plugin-next": "^16.2.6",
     "@types/node": "^25.6.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "eslint": "^10.4.0",
-    "eslint-config-next": "16.2.4",
+    "eslint": "^10.3.0",
+    "eslint-config-next": "16.2.6",
     "globals": "^17.6.0",
     "typescript": "^6.0.3"
   }
